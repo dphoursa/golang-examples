@@ -86,9 +86,7 @@ func main() {
             fmt.Println("Error:", err)
             return
         }
-        
-        fmt.Println(record) // record has the type []string
-        
+
         for _, word := range record {
             total := 0
             
