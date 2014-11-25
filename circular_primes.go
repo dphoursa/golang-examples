@@ -4,7 +4,7 @@ import (
     "fmt"
     "time"
     "strconv"
-    //"math"
+    "strings"
 )
 
 /**
@@ -23,46 +23,53 @@ import (
 
 func main() {
     start := time.Now()
+    max_threshold := 1000000
     threshold := 1000000
-
-    x := make ([]int, threshold)
     
-    for i := 0; i < threshold; i++ {
+
+    x := make ([]int, max_threshold)
+    
+    for i := 0; i < max_threshold; i++ {
         x[i] = 1;
     }
     
     x[0] = 0
     x[1] = 0
-    
-    var primes []int
-    
+
     i := 2;
         
-    for i < threshold {
-        primes = append(primes, i)
-        for j := 2; (j * i) < (threshold); j++ {
+    for i < max_threshold {
+        for j := 2; (j * i) < (max_threshold); j++ {
             tmp := j * i;
             x[tmp] = 0
         }
         
         i++;
-        for i < threshold && x[i] == 0 {
+        for i < max_threshold && x[i] == 0 {
             i++;
         }
     }
     
     output := []int{}
     
-    for i := 0; i < len(primes); i++ {
+    for i := 0; i < threshold; i++ {
         valid := true
-        perm := primes[i]
-        for true {
-            perm := permutate(perm);
-            
-            if perm != 0 {
-                break;
-            }
-            
+        
+        if (x[i] == 0) {
+            continue;
+        }
+        
+        temp := strconv.Itoa(i)
+        
+        if strings.Contains(temp, "0") {
+            continue
+        }
+        
+        for i := 0; i < len(temp); i++ {
+           
+            temp = temp[1:] + temp[:1]
+            var perm, _ = strconv.Atoi(temp)
+           
             if x[perm] == 0 {
                 valid = false
                 break
@@ -70,61 +77,17 @@ func main() {
         }
         
         if valid {
-            output = append(output, primes[i])
+            output = append(output, i)
         }
+
     }
     
     for i := 0; i < len(output); i++ {
         fmt.Println(output[i]);
     }
+    
+    fmt.Println("Answer:", len(output));
 
     fmt.Print("Total time: ")
     fmt.Println(time.Since(start).Seconds())  
-}
-
-func Reverse(s string) string {
-    runes := []rune(s)
-    for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
-        runes[i], runes[j] = runes[j], runes[i]
-    }
-    return string(runes)
-}
-
-func permutate(number int) int {
-    numbers := []rune(strconv.Itoa(number))
-    
-    //1. Find the largest index k such that a[k] < a[k + 1]. If no such index exists, the permutation is the last permutation.
-    i := len(numbers) - 1
-    
-    //for isset(numbers[i - 1]) && numbers[i - 1] >= numbers[i] {
-    
-    for true {
-        tmp := i - 1
-        val, ok := numbers[tmp]
-        if !ok || val < numbers[i] {
-            break
-        }
-        i--
-    }
-    
-    if i == 0 {
-        return 0
-    }
-
-    //2. Find the largest index l greater than k such that a[k] < a[l].
-    j := len(numbers) - 1;
-    for numbers[j] <= numbers[i - 1] {
-        j--;
-    }
-    
-    //3. Swap the value of a[k] with that of a[l].
-    tmp := numbers[i - 1];
-    numbers[i - 1] = numbers[j];
-    numbers[j] = tmp;
-    
-    start := string(numbers[:i])
-    end := Reverse(string(numbers[i:]))
-    
-    //4. Reverse the sequence from a[k + 1] up to and including the final element a[n].
-    return strconv.Atoi(start + end);
 }
