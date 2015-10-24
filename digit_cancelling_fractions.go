@@ -17,10 +17,32 @@ import (
  * If the product of these four fractions is given in its lowest common terms, find the value of the denominator.
  */
 
+type Fraction struct {
+	n, d int
+}
+
+func (f *Fraction) multiplyBy(multiplier Fraction) {
+	f.n *= multiplier.n
+	f.d *= multiplier.d
+}
+
+func (f *Fraction) divideBy(divider int) {
+	f.n /= divider
+	f.d /= divider
+}
+
+func (f *Fraction) simplify() {
+	for i := f.n; i > 1; i-- {
+		for math.Mod(float64(f.n), float64(i)) == 0 && 
+			math.Mod(float64(f.d), float64(i)) == 0 {
+			f.divideBy(i)
+		}
+	}
+}
+
 func main() {
 
-	n_r := 1;
-	d_r := 1;
+	fraction := Fraction{1, 1}
 
 	for n := 1; n <= 8; n++ {
 		for d := 2; d <= 9; d++ {
@@ -39,21 +61,16 @@ func main() {
 					(xn < dx && xn * d == dx * n) ||
 					(nx < xd && nx * d == xd * n) || 
 					(nx < dx && nx * d == dx * n) {
-					n_r *= n;
-					d_r *= d;
+
+					multiplier := Fraction{n, d}
+					fraction.multiplyBy(multiplier)
 				}
 			}
 		}
 	}
 
-	for i := n_r; i > 1; i-- {
-		for math.Mod(float64(n_r), float64(i)) == 0 && 
-			math.Mod(float64(d_r), float64(i)) == 0 {
-			n_r = n_r / i
-			d_r = d_r / i
-		}
-	}
+	fraction.simplify();
 
-	fmt.Println(n_r, " / ", d_r)
+	fmt.Println(fraction.n, " / ", fraction.d)
 }
 
